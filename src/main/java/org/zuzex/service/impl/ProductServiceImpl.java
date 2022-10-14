@@ -6,8 +6,10 @@ import org.zuzex.exception.ProductIsOutOfStockException;
 import org.zuzex.exception.ProductNotFoundException;
 import org.zuzex.exception.ServiceException;
 import org.zuzex.model.Product;
+import org.zuzex.model.Shop;
 import org.zuzex.repository.ProductRepository;
 import org.zuzex.service.ProductService;
+import org.zuzex.service.ShopService;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.transaction.Transactional;
@@ -23,6 +25,17 @@ import static org.zuzex.constant.Constants.*;
 public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
+    private final ShopService shopService;
+
+    @Transactional
+    @Override
+    public Product addProductToShop(Product product, Long shopId) {
+        Shop shopDb = shopService.getShopById(shopId);
+        product.setShop(shopDb);
+        productRepository.persist(product);
+        log.info("IN addProductToShop - product: {} successfully add prod", product);
+        return product;
+    }
 
     @Transactional
     @Override
@@ -32,8 +45,10 @@ public class ProductServiceImpl implements ProductService {
             throw new ProductIsOutOfStockException(PRODUCT_OUT_STOCK);
         log.info("IN productPurchase - quantity: {} before purchase", productDb.getQuantity());
         productDb.setQuantity(productDb.getQuantity() - 1);
-        updateProductForPurchase(productDb);
+        Product productUpdate = updateProductForPurchase(productDb);
+        log.info("IN productPurchase - quantity: {} after purchase", productUpdate.getQuantity());
     }
+
     private Product updateProductForPurchase(Product product) {
         if (isNull(product.getId()))
             throw new ServiceException(PRODUCT_DOES_NOT_ID);
@@ -42,12 +57,13 @@ public class ProductServiceImpl implements ProductService {
         return product;
     }
 
+    @Transactional
     @Override
-    public Product updateProduct(Product product) {
+    public Product updateProduct(Product product, Long productId) {
+        product.setId(productId);
         if (isNull(product.getId()))
             throw new ServiceException(PRODUCT_DOES_NOT_ID);
-        Product productDb = getProductById(product.getId());
-        product.setId(productDb.getId());
+        Product checkProduct = getProductById(product.getId());
         productRepository.persist(product);
         log.info("IN updateProduct - product: {} successfully update", product);
         return product;

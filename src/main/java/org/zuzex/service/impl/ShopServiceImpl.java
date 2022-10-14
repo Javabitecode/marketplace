@@ -27,7 +27,6 @@ import static org.zuzex.constant.Constants.*;
 @RequiredArgsConstructor
 public class ShopServiceImpl implements ShopService {
     private final ShopRepository shopRepository;
-    private final ProductService productService;
 
     @Transactional
     @Override
@@ -35,14 +34,7 @@ public class ShopServiceImpl implements ShopService {
         Shop shopDb = shopRepository.findByName(shop.getName());
         if (nonNull(shopDb))
             throw new ShopAlreadyExistsException(SHOP_EXISTS);
-        Shop sh = Shop.builder()
-                        .name(shop.getName())
-                .build();
-        shopRepository.persist(sh);
-        Shop shopDbs = shopRepository.findByName(sh.getName());
-        System.out.println("sdsdaasda" + shop.getProducts());
-        shopDbs.addProduct(shop.getProducts().stream().findFirst().get());
-        shopRepository.persist(shopDbs);
+        shopRepository.persist(shop);
         log.info("IN createShop - shop: {} successfully created", shop);
         return shop;
     }
@@ -65,17 +57,21 @@ public class ShopServiceImpl implements ShopService {
 
     @Transactional
     @Override
-    public Shop updateShop(Shop shop) {
+    public Shop updateShop(Shop shop, Long shopId) {
+        shop.setId(shopId);
         if (isNull(shop.getId()))
             throw new ServiceException(SHOP_DOES_NOT_ID);
-        Shop shopDb = getShopById(shop.getId());
-        shop.setId(shopDb.getId());
         shopRepository.persist(shop);
         log.info("IN updateShop - shop: {} successfully updated", shop);
         return shop;
     }
 
-    @Transactional
+    @Override
+    public void deleteShop(Long id) {
+        shopRepository.deleteById(id);
+    }
+
+/*    @Transactional
     @Override
     public Shop addNewProductToShop(Product product, Long shopId) {
         Shop shopDb = getShopById(shopId);
@@ -83,9 +79,9 @@ public class ShopServiceImpl implements ShopService {
         shopRepository.persist(shopDb);
         log.info("IN addProduct - product: {} successfully added", product);
         return shopDb;
-    }
+    }*/
 
-    @Transactional
+/*    @Transactional
     @Override
     public void removeProductFromShop(Long productId, Long shopId) {
         Shop shopDb = getShopById(shopId);
@@ -97,10 +93,5 @@ public class ShopServiceImpl implements ShopService {
         shopDb.removeProduct(product);
         shopRepository.persist(shopDb);
         log.info("IN addProduct - product: {} successfully added", product);
-    }
-
-    @Override
-    public void deleteShop(Long id) {
-        shopRepository.deleteById(id);
-    }
+    }*/
 }

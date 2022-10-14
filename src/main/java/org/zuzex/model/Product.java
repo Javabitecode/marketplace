@@ -43,12 +43,11 @@ public class Product {
     private Long quantity;
 
     @ManyToOne
-    @JoinColumn(name = "category", nullable = false)
+    @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
-    @ToString.Exclude
-    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "shop_id", nullable = false)
     private Shop shop;
 
     @Override

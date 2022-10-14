@@ -3,8 +3,6 @@ package org.zuzex.model;
 import lombok.*;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 
 @Setter
 @Getter
@@ -21,25 +19,6 @@ public class Shop {
 
     @Column(name = "name", unique = true)
     private String name;
-
-    /*@OneToMany(
-            mappedBy = "shop",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true
-    )
-    @ToString.Exclude*/
-    @OneToMany(mappedBy = "shop", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Product> products = new ArrayList<>();
-
-    public void addProduct(Product product) {
-        products.add(product);
-        product.setShop(this);
-    }
-
-    public void removeProduct(Product product) {
-        products.remove(product);
-        product.setShop(null);
-    }
 
     @Override
     public boolean equals(Object o) {

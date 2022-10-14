@@ -25,6 +25,6 @@ public class ProductDto {
     private Long price;
     private UUID article;
     private Long quantity;
-    private Category category;
+    private CategoryDto category;
     private ShopDto shopDto;
 }
