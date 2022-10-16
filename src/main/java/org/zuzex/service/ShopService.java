@@ -12,7 +12,7 @@ public interface ShopService {
 
     Shop getShopById(Long id);
 
-    Shop updateShop(Shop shop, Long shopId);
+    Shop updateShopName(Shop shop, Long shopId);
 
     void deleteShop(Long id);
 

@@ -1,11 +1,11 @@
 package org.zuzex.controller;
 
+import lombok.RequiredArgsConstructor;
 import org.zuzex.dto.ShopDto;
 import org.zuzex.model.Shop;
 import org.zuzex.service.ShopMapper;
 import org.zuzex.service.ShopService;
 
-import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -16,11 +16,11 @@ import static javax.ws.rs.core.Response.Status.CREATED;
 @Path("/api/v1/shops")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes({MediaType.TEXT_PLAIN, MediaType.APPLICATION_JSON})
+@RequiredArgsConstructor
 public class ShopController {
-    @Inject
-    ShopService shopService;
-    @Inject
-    ShopMapper shopMapper;
+
+    private final ShopService shopService;
+    private final ShopMapper shopMapper;
 
     @GET
     @Path(("/{shopId}"))
@@ -32,24 +32,23 @@ public class ShopController {
     public List<ShopDto> getAllShop() {
         return shopService.getAllShop()
                 .stream()
-                .map(shop -> shopMapper.toShopDto(shop))
+                .map(shopMapper::toShopDto)
                 .toList();
     }
-
-    @PUT
-    @Path(("/{shopId}"))
-    public Response updateShop(@PathParam("shopId") Long shopId, ShopDto shopDto) {
-        Shop shop = shopMapper.toShop(shopDto);
-        ShopDto response = shopMapper.toShopDto(shopService.updateShop(shop, shopId));
-        return Response.ok().entity(response).build();
-    }
-
 
     @POST
     public Response createShop(ShopDto shopDto) {
         Shop shop = shopMapper.toShop(shopDto);
         ShopDto response = shopMapper.toShopDto(shopService.createShop(shop));
         return Response.status(CREATED).entity(response).build();
+    }
+
+    @PUT
+    @Path(("/{shopId}"))
+    public Response updateShopName(@PathParam("shopId") Long shopId, ShopDto shopDto) {
+        Shop shop = shopMapper.toShop(shopDto);
+        ShopDto response = shopMapper.toShopDto(shopService.updateShopName(shop, shopId));
+        return Response.ok().entity(response).build();
     }
 
     @DELETE

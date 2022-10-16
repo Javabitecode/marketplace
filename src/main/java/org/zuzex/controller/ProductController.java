@@ -42,6 +42,7 @@ public class ProductController {
     }
 
     @POST
+    @Path(("/sell/{productId}"))
     public void sellProduct(@PathParam("productId") Long productId) {
         productService.sellProduct(productId);
     }

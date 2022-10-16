@@ -5,8 +5,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.zuzex.exception.ProductIsOutOfStockException;
 import org.zuzex.exception.ProductNotFoundException;
 import org.zuzex.exception.ServiceException;
+import org.zuzex.model.Category;
 import org.zuzex.model.Product;
 import org.zuzex.model.Shop;
+import org.zuzex.repository.CategoryRepository;
 import org.zuzex.repository.ProductRepository;
 import org.zuzex.service.ProductService;
 import org.zuzex.service.ShopService;
@@ -26,11 +28,14 @@ public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
     private final ShopService shopService;
+    private final CategoryRepository categoryRepository;
 
     @Transactional
     @Override
     public Product addProductToShop(Product product, Long shopId) {
         Shop shopDb = shopService.getShopById(shopId);
+        Category category = categoryRepository.findByName(product.getCategory().getName());
+        product.setCategory(category);
         product.setShop(shopDb);
         productRepository.persist(product);
         log.info("IN addProductToShop - product: {} successfully add prod", product);
@@ -52,7 +57,7 @@ public class ProductServiceImpl implements ProductService {
     private Product updateProductForPurchase(Product product) {
         if (isNull(product.getId()))
             throw new ServiceException(PRODUCT_DOES_NOT_ID);
-        productRepository.persist(product);
+        productRepository.update("quantity", product.getQuantity());
         log.info("IN updateProduct - product: {} successfully update", product);
         return product;
     }

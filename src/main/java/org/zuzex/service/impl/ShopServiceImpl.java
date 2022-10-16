@@ -57,11 +57,11 @@ public class ShopServiceImpl implements ShopService {
 
     @Transactional
     @Override
-    public Shop updateShop(Shop shop, Long shopId) {
+    public Shop updateShopName(Shop shop, Long shopId) {
         shop.setId(shopId);
         if (isNull(shop.getId()))
             throw new ServiceException(SHOP_DOES_NOT_ID);
-        shopRepository.persist(shop);
+        shopRepository.update("name and ", shop.getName());
         log.info("IN updateShop - shop: {} successfully updated", shop);
         return shop;
     }
