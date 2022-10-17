@@ -5,10 +5,11 @@ import org.zuzex.model.Category;
 import org.zuzex.model.Shop;
 
 import javax.enterprise.context.ApplicationScoped;
+import java.util.Optional;
 
 @ApplicationScoped
 public class CategoryRepository implements PanacheRepository<Category> {
-    public Category findByName(String name){
-        return find("name",name).firstResult();
+    public Optional<Category> findByName(String name){
+        return find("name",name).stream().findFirst();
     }
 }

@@ -8,14 +8,15 @@ import org.zuzex.exception.ServiceException;
 import org.zuzex.model.Category;
 import org.zuzex.model.Product;
 import org.zuzex.model.Shop;
-import org.zuzex.repository.CategoryRepository;
 import org.zuzex.repository.ProductRepository;
+import org.zuzex.service.CategoryService;
 import org.zuzex.service.ProductService;
 import org.zuzex.service.ShopService;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
@@ -28,13 +29,14 @@ public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
     private final ShopService shopService;
-    private final CategoryRepository categoryRepository;
+    private final CategoryService categoryService;
+
 
     @Transactional
     @Override
-    public Product addProductToShop(Product product, Long shopId) {
+    public Product addProductToShop(Product product, Long shopId, Long categoryId) {
         Shop shopDb = shopService.getShopById(shopId);
-        Category category = categoryRepository.findByName(product.getCategory().getName());
+        Category category = categoryService.getCategoryById(categoryId);
         product.setCategory(category);
         product.setShop(shopDb);
         productRepository.persist(product);
@@ -44,7 +46,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Transactional
     @Override
-    public void sellProduct(Long productId) {
+    public Product sellProduct(Long productId) {
         Product productDb = getProductById(productId);
         if (productDb.getQuantity() <= 0)
             throw new ProductIsOutOfStockException(PRODUCT_OUT_STOCK);
@@ -52,26 +54,37 @@ public class ProductServiceImpl implements ProductService {
         productDb.setQuantity(productDb.getQuantity() - 1);
         Product productUpdate = updateProductForPurchase(productDb);
         log.info("IN productPurchase - quantity: {} after purchase", productUpdate.getQuantity());
+        return productUpdate;
     }
 
     private Product updateProductForPurchase(Product product) {
         if (isNull(product.getId()))
             throw new ServiceException(PRODUCT_DOES_NOT_ID);
-        productRepository.update("quantity", product.getQuantity());
-        log.info("IN updateProduct - product: {} successfully update", product);
+        productRepository.persist(product);
+        log.info("IN updateProductForPurchase - product: {} successfully update", product);
         return product;
     }
 
+    /*TODO сделать update 1 запросм в бд*/
     @Transactional
     @Override
-    public Product updateProduct(Product product, Long productId) {
-        product.setId(productId);
-        if (isNull(product.getId()))
-            throw new ServiceException(PRODUCT_DOES_NOT_ID);
-        Product checkProduct = getProductById(product.getId());
-        productRepository.persist(product);
-        log.info("IN updateProduct - product: {} successfully update", product);
-        return product;
+    public Product updateProduct(Product product, Long productId, Long shopId, Long categoryId) {
+        Product productDb = getProductById(productId);
+        Shop shopDb = shopService.getShopById(shopId);
+        Category categoryDb = categoryService.getCategoryById(categoryId);
+        Product productSave = product.toBuilder()
+                .id(productDb.getId())
+                .name(product.getName())
+                .article(product.getArticle())
+                .quantity(product.getQuantity())
+                .currency(product.getCurrency())
+                .price(product.getPrice())
+                .shop(shopDb)
+                .category(categoryDb)
+                .build();
+        productRepository.getEntityManager().merge(productSave);
+        log.info("IN updateProduct - product: {} successfully update", productSave);
+        return productSave;
     }
 
     @Override
@@ -83,13 +96,13 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Product getProductById(Long id) {
-        Product product = productRepository.findById(id);
-        if (isNull(product))
-            throw new ProductNotFoundException(PRODUCT_NOT_FOUND);
+        Product product = productRepository.findByIdOptional(id)
+                .orElseThrow(() -> new ProductNotFoundException(PRODUCT_NOT_FOUND));
         log.info("IN getProductById - id: {} successfully get by id", id);
         return product;
     }
 
+    @Transactional
     @Override
     public void deleteProductById(Long id) {
         productRepository.deleteById(id);

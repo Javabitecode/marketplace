@@ -1,13 +1,12 @@
 package org.zuzex.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
-import org.zuzex.enums.CURRENCY;
+import org.zuzex.enums.Currency;
 
 import javax.persistence.*;
 import java.util.UUID;
 
-import static org.zuzex.enums.CURRENCY.RUB;
+import static org.zuzex.enums.Currency.RUB;
 
 
 @Setter
@@ -32,7 +31,7 @@ public class Product {
 
     @Enumerated(EnumType.STRING)
     @Builder.Default
-    private CURRENCY currency = RUB;
+    private Currency currency = RUB;
 
     @Column(name = "article",
             nullable = false,
@@ -42,12 +41,14 @@ public class Product {
     @Column(name = "quantity", nullable = false)
     private Long quantity;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id", nullable = false)
+    @ToString.Exclude
     private Category category;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "shop_id", nullable = false)
+    @ToString.Exclude
     private Shop shop;
 
     @Override

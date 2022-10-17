@@ -8,12 +8,12 @@ import java.util.List;
 public interface ProductService {
 
     @Transactional
-    Product addProductToShop(Product product, Long shopId);
+    Product addProductToShop(Product product, Long shopId, Long categoryId);
 
     @Transactional
-    void sellProduct(Long productId);
+    Product sellProduct(Long productId);
 
-    Product updateProduct(Product product, Long productId);
+    Product updateProduct(Product product, Long productId, Long shopId, Long categoryId);
 
     List<Product> getAllProduct();
 

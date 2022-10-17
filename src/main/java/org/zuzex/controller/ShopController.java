@@ -3,7 +3,7 @@ package org.zuzex.controller;
 import lombok.RequiredArgsConstructor;
 import org.zuzex.dto.ShopDto;
 import org.zuzex.model.Shop;
-import org.zuzex.service.ShopMapper;
+import org.zuzex.util.mapper.ShopMapper;
 import org.zuzex.service.ShopService;
 
 import javax.ws.rs.*;
@@ -23,7 +23,7 @@ public class ShopController {
     private final ShopMapper shopMapper;
 
     @GET
-    @Path(("/{shopId}"))
+    @Path("/{shopId}")
     public ShopDto getShopById(@PathParam("shopId") Long id) {
         return shopMapper.toShopDto(shopService.getShopById(id));
     }
@@ -57,21 +57,4 @@ public class ShopController {
         shopService.deleteShop(shopId);
         return Response.noContent().build();
     }
-    /*
-        @POST
-    @Path(("/{shopId}"))
-    public Response addNewProductToShop(@PathParam("shopId") Long shopId, ProductDto productDto) {
-        Product product = productMapper.toProduct(productDto);
-        ShopDto response = shopMapper.toShopDto(shopService.addNewProductToShop(product, shopId));
-        return Response.status(CREATED).entity(response).build() ;
-    }
-
-    @POST
-    @Path(("/{shopId}/products/{productId}"))
-    public Response removeProductFromShop(@PathParam("shopId") Long shopId,
-                                      @PathParam("productId") Long productId) {
-        shopService.removeProductFromShop(productId, shopId);
-        return Response.noContent().build();
-    }
-    */
 }
