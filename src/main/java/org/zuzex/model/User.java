@@ -1,5 +1,11 @@
 package org.zuzex.model;
 
+import io.quarkus.elytron.security.common.BcryptUtil;
+import io.quarkus.hibernate.orm.panache.PanacheEntity;
+import io.quarkus.security.jpa.Password;
+import io.quarkus.security.jpa.Roles;
+import io.quarkus.security.jpa.UserDefinition;
+import io.quarkus.security.jpa.Username;
 import lombok.*;
 
 import javax.persistence.*;
@@ -9,28 +15,25 @@ import javax.persistence.*;
 @ToString
 @Entity(name = "User")
 @Table(name = "users")
+@UserDefinition
 @Builder(toBuilder = true)
 @AllArgsConstructor
 @NoArgsConstructor
-public class User {
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_seq")
-    @SequenceGenerator(name = "user_seq", sequenceName = "user_sequence")
-    private Long id;
-    private String field;
+public class User extends PanacheEntity {
+    @Username
+    public String username;
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof User))
-            return false;
-        User entity = (User) o;
-        return id != null &&
-                id.equals(entity.getId());
-    }
+    @Password
+    public String password;
 
-    @Override
-    public int hashCode() {
-        return getClass().hashCode();
+    @Roles
+    public String role;
+
+    public static void add(String username, String password, String role) {
+        User user = new User();
+        user.username = username;
+        user.password = BcryptUtil.bcryptHash(password);
+        user.role = role;
+        user.persist();
     }
 }
