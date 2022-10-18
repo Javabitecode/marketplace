@@ -16,7 +16,12 @@ public enum Currency {
         this.name = operation;
     }
 
-    public static Currency valueOfOperation(String name) {
+
+    /**
+     * @param name of currency
+     * @return value of currency
+     */
+    public static Currency valueOfCurrency(String name) {
         for (Currency e : values()) {
             if (e.name.equals(name)) {
                 return e;

@@ -29,6 +29,7 @@ public class User extends PanacheEntity {
     @Roles
     public String role;
 
+    /*TODO Вынести в сервис*/
     public static void add(String username, String password, String role) {
         User user = new User();
         user.username = username;

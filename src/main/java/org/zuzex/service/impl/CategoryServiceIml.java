@@ -13,6 +13,9 @@ import javax.transaction.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static org.zuzex.constant.ExceptionConstants.CATEGORY_IS_EXISTS;
+import static org.zuzex.constant.ExceptionConstants.CATEGORY_NOT_FOUND;
+
 @Slf4j
 @ApplicationScoped
 @RequiredArgsConstructor
@@ -23,13 +26,13 @@ public class CategoryServiceIml implements CategoryService {
     @Override
     public Category getCategoryByName(String name) {
         return categoryRepository.findByName(name)
-                .orElseThrow(() -> new EntityNotFoundException("Category not found"));
+                .orElseThrow(() -> new EntityNotFoundException(CATEGORY_NOT_FOUND));
     }
 
     @Override
     public Category getCategoryById(Long id) {
         return categoryRepository.findByIdOptional(id)
-                .orElseThrow(() -> new EntityNotFoundException("Category not found"));
+                .orElseThrow(() -> new EntityNotFoundException(CATEGORY_NOT_FOUND));
     }
 
     @Override
@@ -44,7 +47,7 @@ public class CategoryServiceIml implements CategoryService {
     public Category createCategory(Category category) {
         boolean checkCategory = categoryRepository.findByName(category.getName()).isPresent();
         if (checkCategory)
-            throw new ShopAlreadyExistsException("Category is exists");
+            throw new ShopAlreadyExistsException(CATEGORY_IS_EXISTS);
         categoryRepository.persist(category);
         return category;
     }

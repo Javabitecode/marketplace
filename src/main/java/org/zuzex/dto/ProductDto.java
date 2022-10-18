@@ -22,15 +22,15 @@ public class ProductDto {
     @Builder.Default
     private Currency currency = RUB;
 
-    @NotNull(message = "name не должно равняться null")
+    @NotNull(message = "Имя продукта не должно равняться null")
     private String name;
 
-    @NotNull(message = "price не должна равняться null")
+    @NotNull(message = "Цена продукта не должна равняться null")
     private Long price;
 
     private UUID article;
 
-    @NotNull(message = "quantity не должно равняться null")
+    @NotNull(message = "Количество не должно равняться null")
     private Long quantity;
 
     private CategoryDto categoryDto;

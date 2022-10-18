@@ -7,8 +7,8 @@ import org.zuzex.model.Product;
 import org.zuzex.model.ProductImprint;
 import org.zuzex.repository.CheckRepository;
 import org.zuzex.service.CheckService;
-import org.zuzex.util.mapper.ProductImprintMapper;
 import org.zuzex.service.ProductService;
+import org.zuzex.util.mapper.ProductImprintMapper;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.transaction.Transactional;
@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import static org.zuzex.constant.Constants.SHOP_NAME;
+import static org.zuzex.constant.AppConstants.SHOP_NAME;
 
 @Slf4j
 @ApplicationScoped
@@ -29,7 +29,7 @@ public class CheckServiceImpl implements CheckService {
     @Override
     public Check createCheck(Check check) {
         checkRepository.persist(check);
-        log.info("IN createCheckByListProduct - check: {} successfully created check", check);
+        log.info("IN createCheck - check: {} successfully created check", check);
         return check;
     }
 

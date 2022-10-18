@@ -14,9 +14,6 @@ import io.quarkus.security.AuthenticationFailedException;
 @Priority(Priorities.AUTHENTICATION)
 public class AuthenticationFailedExceptionMapper implements ExceptionMapper<AuthenticationFailedException> {
 
-    @Context
-    UriInfo uriInfo;
-
     @Override
     public Response toResponse(AuthenticationFailedException exception) {
         return Response.status(401).header("WWW-Authenticate", "Basic realm=\"Quarkus\"").build();

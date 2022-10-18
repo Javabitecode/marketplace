@@ -14,8 +14,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.nonNull;
-import static org.zuzex.constant.Constants.SHOP_EXISTS;
-import static org.zuzex.constant.Constants.SHOP_NOT_FOUND;
+import static org.zuzex.constant.ExceptionConstants.SHOP_EXISTS;
+import static org.zuzex.constant.ExceptionConstants.SHOP_NOT_FOUND;
 
 @Slf4j
 @ApplicationScoped

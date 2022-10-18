@@ -16,11 +16,10 @@ import org.zuzex.service.ShopService;
 import javax.enterprise.context.ApplicationScoped;
 import javax.transaction.Transactional;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
-import static org.zuzex.constant.Constants.*;
+import static org.zuzex.constant.ExceptionConstants.*;
 
 @Slf4j
 @ApplicationScoped
@@ -30,7 +29,6 @@ public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
     private final ShopService shopService;
     private final CategoryService categoryService;
-
 
     @Transactional
     @Override

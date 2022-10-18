@@ -1,5 +1,6 @@
 package org.zuzex.controller;
 
+import io.quarkus.cache.CacheResult;
 import io.quarkus.security.identity.SecurityIdentity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,12 +17,18 @@ import javax.ws.rs.core.Response;
 import java.util.List;
 
 import static javax.ws.rs.core.Response.Status.CREATED;
+import static org.zuzex.constant.AppConstants.ADMIN;
+import static org.zuzex.constant.AppConstants.USER;
+import static org.zuzex.constant.UriConstants.SHOP_ID;
+import static org.zuzex.constant.UriConstants.SHOP_PATH_V1;
 
 @Slf4j
-@Path("/api/v1/shops")
+@Path(SHOP_PATH_V1)
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes({MediaType.TEXT_PLAIN, MediaType.APPLICATION_JSON})
 @RequiredArgsConstructor
+/*TODO Проверить создателя ресурса и дать права обновления только ему и админую(AUTH).
+ *  Перенести в интерфейс*/
 public class ShopController {
 
     private final ShopService shopService;
@@ -31,12 +38,13 @@ public class ShopController {
 
     @PermitAll
     @GET
-    @Path("/{shopId}")
+    @Path(SHOP_ID)
     public ShopDto getShopById(@PathParam("shopId") Long id) {
         return shopMapper.toShopDto(shopService.getShopById(id));
     }
 
     @PermitAll
+    @CacheResult(cacheName = "get-shops-cache")
     @GET
     public List<ShopDto> getAllShop() {
         return shopService.getAllShop()
@@ -45,7 +53,7 @@ public class ShopController {
                 .toList();
     }
 
-    @RolesAllowed("user")
+    @RolesAllowed(value = {USER, ADMIN})
     @POST
     public Response createShop(ShopDto shopDto) {
         Shop shop = shopMapper.toShop(shopDto);
@@ -53,10 +61,9 @@ public class ShopController {
         return Response.status(CREATED).entity(response).build();
     }
 
-    /*TODO Проверить создателя магазина и дать права обновления только ему*/
-    @RolesAllowed(value = {"user", "admin"})
+    @RolesAllowed(value = {USER, ADMIN})
     @PUT
-    @Path("/{shopId}")
+    @Path(SHOP_ID)
     public Response updateShopName(@PathParam("shopId") Long shopId,
                                    ShopDto shopDto) {
         log.info("User updateShopName - user: {}", identity.getPrincipal().getName());
@@ -65,10 +72,9 @@ public class ShopController {
         return Response.ok().entity(response).build();
     }
 
-    /*TODO Проверить создателя магазина и дать права обновления только ему*/
-    @RolesAllowed(value = {"user", "admin"})
+    @RolesAllowed(value = {USER, ADMIN})
     @DELETE
-    @Path("/{shopId}")
+    @Path(SHOP_ID)
     public Response deleteShopById(@PathParam("shopId") Long shopId) {
         shopService.deleteShop(shopId);
         return Response.noContent().build();
