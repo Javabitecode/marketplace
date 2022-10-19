@@ -1,38 +1,33 @@
 package org.zuzex.model;
 
-import io.quarkiverse.hibernate.types.json.JsonBinaryType;
-import io.quarkiverse.hibernate.types.json.JsonTypes;
+import io.quarkus.mongodb.panache.common.MongoEntity;
 import lombok.*;
-import org.hibernate.annotations.Type;
-import org.hibernate.annotations.TypeDef;
-import org.hibernate.annotations.TypeDefs;
+import org.bson.codecs.pojo.annotations.BsonId;
+import org.bson.codecs.pojo.annotations.BsonProperty;
 
-import javax.persistence.*;
 import java.util.List;
 
 @Setter
 @Getter
 @ToString
-@Entity(name = "Check")
-@Table(name = "checks")
+@MongoEntity(collection = "checks")
 @Builder(toBuilder = true)
 @AllArgsConstructor
 @NoArgsConstructor
-@TypeDefs(@TypeDef(name = "jsonb", typeClass = JsonBinaryType.class))
+/*@TypeDefs(@TypeDef(name = "jsonb", typeClass = JsonBinaryType.class))*/
 public class Check {
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "check_seq")
-    @SequenceGenerator(name = "check_seq", sequenceName = "check_sequence")
+    @BsonId
     private Long id;
 
-    @Column(name = "name")
+    @BsonProperty("name")
     private String name;
 
-    @Column(name = "shop_name")
+    @BsonProperty("shop_name")
     private String shopName;
 
-    @Type(type = JsonTypes.JSON_BIN)
-    @Column(name = "product_imprints", columnDefinition = JsonTypes.JSON_BIN)
+
+    /* @Type(type = JsonTypes.JSON_BIN)*/
+    @BsonProperty("product_imprints")
     private List<ProductImprint> productImprints;
 
     @Override

@@ -1,23 +1,26 @@
 package org.zuzex.model;
 
+import io.quarkus.mongodb.panache.PanacheMongoEntityBase;
+import io.quarkus.mongodb.panache.common.MongoEntity;
 import lombok.*;
+import org.bson.codecs.pojo.annotations.BsonId;
+import org.bson.codecs.pojo.annotations.BsonProperty;
 
 import javax.persistence.*;
 
 @Setter
 @Getter
 @ToString
-@Entity
+@MongoEntity(collection = "Shop")
 @Builder(toBuilder = true)
 @AllArgsConstructor
 @NoArgsConstructor
 public class Shop {
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "shop_seq")
-    @SequenceGenerator(name = "shop_seq", sequenceName = "shop_sequence")
+
+    @BsonId
     private Long id;
 
-    @Column(name = "name", unique = true)
+    @BsonProperty("name")
     private String name;
 
     @Override

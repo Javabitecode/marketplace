@@ -9,12 +9,12 @@ import org.zuzex.service.CategoryService;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.EntityNotFoundException;
-import javax.transaction.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.zuzex.constant.ExceptionConstants.CATEGORY_IS_EXISTS;
 import static org.zuzex.constant.ExceptionConstants.CATEGORY_NOT_FOUND;
+import static org.zuzex.util.GeneratorId.generateId;
 
 @Slf4j
 @ApplicationScoped
@@ -42,17 +42,16 @@ public class CategoryServiceIml implements CategoryService {
                 .collect(Collectors.toList());
     }
 
-    @Transactional
     @Override
     public Category createCategory(Category category) {
         boolean checkCategory = categoryRepository.findByName(category.getName()).isPresent();
         if (checkCategory)
             throw new ShopAlreadyExistsException(CATEGORY_IS_EXISTS);
+        category.setId(generateId());
         categoryRepository.persist(category);
         return category;
     }
 
-    @Transactional
     @Override
     public void deleteCategory(Long id) {
         categoryRepository.deleteById(id);

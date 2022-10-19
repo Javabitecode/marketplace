@@ -9,13 +9,13 @@ import org.zuzex.repository.ShopRepository;
 import org.zuzex.service.ShopService;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.transaction.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.nonNull;
 import static org.zuzex.constant.ExceptionConstants.SHOP_EXISTS;
 import static org.zuzex.constant.ExceptionConstants.SHOP_NOT_FOUND;
+import static org.zuzex.util.GeneratorId.generateId;
 
 @Slf4j
 @ApplicationScoped
@@ -23,12 +23,12 @@ import static org.zuzex.constant.ExceptionConstants.SHOP_NOT_FOUND;
 public class ShopServiceImpl implements ShopService {
     private final ShopRepository shopRepository;
 
-    @Transactional
     @Override
     public Shop createShop(Shop shop) {
         Shop shopDb = shopRepository.findByName(shop.getName());
         if (nonNull(shopDb))
             throw new ShopAlreadyExistsException(SHOP_EXISTS);
+        shop.setId(generateId());
         shopRepository.persist(shop);
         log.info("IN createShop - shop: {} successfully created", shop);
         return shop;
@@ -49,12 +49,11 @@ public class ShopServiceImpl implements ShopService {
         return shop;
     }
 
-    @Transactional
     @Override
     public Shop updateShopName(Shop shop, Long shopId) {
         Shop shopDb = getShopById(shopId);
         shopDb.setName(shop.getName());
-        shopRepository.persist(shopDb);
+        shopRepository.update(shopDb);
         log.info("IN updateShop - shop: {} successfully updated", shopDb);
         return shopDb;
     }

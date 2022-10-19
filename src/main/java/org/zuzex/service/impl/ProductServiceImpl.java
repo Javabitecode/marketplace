@@ -14,12 +14,12 @@ import org.zuzex.service.ProductService;
 import org.zuzex.service.ShopService;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.transaction.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
 import static org.zuzex.constant.ExceptionConstants.*;
+import static org.zuzex.util.GeneratorId.generateId;
 
 @Slf4j
 @ApplicationScoped
@@ -30,11 +30,11 @@ public class ProductServiceImpl implements ProductService {
     private final ShopService shopService;
     private final CategoryService categoryService;
 
-    @Transactional
     @Override
     public Product addProductToShop(Product product, Long shopId, Long categoryId) {
         Shop shopDb = shopService.getShopById(shopId);
         Category category = categoryService.getCategoryById(categoryId);
+        product.setId(generateId());
         product.setCategory(category);
         product.setShop(shopDb);
         productRepository.persist(product);
@@ -42,7 +42,6 @@ public class ProductServiceImpl implements ProductService {
         return product;
     }
 
-    @Transactional
     @Override
     public Product sellProduct(Long productId) {
         Product productDb = getProductById(productId);
@@ -58,31 +57,27 @@ public class ProductServiceImpl implements ProductService {
     private Product updateProductForPurchase(Product product) {
         if (isNull(product.getId()))
             throw new ServiceException(PRODUCT_DOES_NOT_ID);
-        productRepository.persist(product);
+        productRepository.update(product);
         log.info("IN updateProductForPurchase - product: {} successfully update", product);
         return product;
     }
 
     /*TODO сделать update 1 запросм в бд*/
-    @Transactional
     @Override
-    public Product updateProduct(Product product, Long productId, Long shopId, Long categoryId) {
+    public Product updateProduct(Product productUpdate, Long productId, Long shopId, Long categoryId) {
         Product productDb = getProductById(productId);
         Shop shopDb = shopService.getShopById(shopId);
         Category categoryDb = categoryService.getCategoryById(categoryId);
-        Product productSave = product.toBuilder()
-                .id(productDb.getId())
-                .name(product.getName())
-                .article(product.getArticle())
-                .quantity(product.getQuantity())
-                .currency(product.getCurrency())
-                .price(product.getPrice())
-                .shop(shopDb)
-                .category(categoryDb)
+        productUpdate = productDb.toBuilder()
+                .name(productUpdate.getName())
+                .article(productUpdate.getArticle())
+                .quantity(productUpdate.getQuantity())
+                .currency(productUpdate.getCurrency())
+                .price(productUpdate.getPrice())
                 .build();
-        productRepository.getEntityManager().merge(productSave);
-        log.info("IN updateProduct - product: {} successfully update", productSave);
-        return productSave;
+        productRepository.update(productUpdate);
+        log.info("IN updateProduct - product: {} successfully update", productUpdate);
+        return productUpdate;
     }
 
     @Override
@@ -100,7 +95,6 @@ public class ProductServiceImpl implements ProductService {
         return product;
     }
 
-    @Transactional
     @Override
     public void deleteProductById(Long id) {
         productRepository.deleteById(id);

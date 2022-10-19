@@ -11,12 +11,12 @@ import org.zuzex.service.ProductService;
 import org.zuzex.util.mapper.ProductImprintMapper;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 import static org.zuzex.constant.AppConstants.SHOP_NAME;
+import static org.zuzex.util.GeneratorId.generateId;
 
 @Slf4j
 @ApplicationScoped
@@ -28,12 +28,12 @@ public class CheckServiceImpl implements CheckService {
 
     @Override
     public Check createCheck(Check check) {
+        check.setId(generateId());
         checkRepository.persist(check);
         log.info("IN createCheck - check: {} successfully created check", check);
         return check;
     }
 
-    @Transactional
     @Override
     public Check createCheckByListProduct(List<Long> productIdList) {
         List<ProductImprint> products = new ArrayList<>();
@@ -42,6 +42,7 @@ public class CheckServiceImpl implements CheckService {
             products.add(imprintMapper.toProductImprint(product));
         }
         Check check = Check.builder()
+                .id(generateId())
                 .productImprints(products)
                 .name(UUID.randomUUID().toString())
                 .shopName(SHOP_NAME)

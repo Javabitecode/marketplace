@@ -1,26 +1,22 @@
 package org.zuzex.model;
 
+import io.quarkus.mongodb.panache.common.MongoEntity;
 import lombok.*;
-
-import javax.persistence.*;
+import org.bson.codecs.pojo.annotations.BsonId;
+import org.bson.codecs.pojo.annotations.BsonProperty;
 
 @Setter
 @Getter
 @ToString
-@Entity
+@MongoEntity(collection = "Category")
 @Builder(toBuilder = true)
 @AllArgsConstructor
 @NoArgsConstructor
 public class Category {
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "category_seq")
-    @SequenceGenerator(name = "category_seq", sequenceName = "category_sequence")
+    @BsonId
     private Long id;
 
-    @Column(name = "name",
-            unique = true,
-            updatable = false,
-            nullable = false)
+    @BsonProperty("name")
     private String name;
 
     @Override
