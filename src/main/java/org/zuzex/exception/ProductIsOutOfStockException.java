@@ -1,6 +1,6 @@
 package org.zuzex.exception;
 
-public class ProductIsOutOfStockException extends ServiceException{
+public class ProductIsOutOfStockException extends ServiceException {
     public ProductIsOutOfStockException() {
     }
 

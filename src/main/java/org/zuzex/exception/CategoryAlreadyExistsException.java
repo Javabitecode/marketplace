@@ -1,6 +1,6 @@
 package org.zuzex.exception;
 
-public class CategoryAlreadyExistsException extends ServiceException{
+public class CategoryAlreadyExistsException extends ServiceException {
     public CategoryAlreadyExistsException() {
     }
 

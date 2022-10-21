@@ -1,6 +1,6 @@
 package org.zuzex.exception;
 
-public class ProductNotFoundException extends ServiceException{
+public class ProductNotFoundException extends ServiceException {
     public ProductNotFoundException() {
     }
 

@@ -1,7 +1,6 @@
 package org.zuzex.service;
 
 import org.zuzex.model.Category;
-import org.zuzex.service.impl.CategoryServiceIml;
 
 import java.util.List;
 

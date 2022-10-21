@@ -1,14 +1,12 @@
 package org.zuzex.exception.mapper;
 
+import io.quarkus.security.AuthenticationFailedException;
+
 import javax.annotation.Priority;
 import javax.ws.rs.Priorities;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
-
-import io.quarkus.security.AuthenticationFailedException;
 
 @Provider
 @Priority(Priorities.AUTHENTICATION)

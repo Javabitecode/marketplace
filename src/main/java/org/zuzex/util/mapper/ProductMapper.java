@@ -1,6 +1,5 @@
 package org.zuzex.util.mapper;
 
-import lombok.RequiredArgsConstructor;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.zuzex.dto.CategoryDto;
@@ -14,7 +13,9 @@ import org.zuzex.model.Shop;
 
 public interface ProductMapper {
     Category toCategory(CategoryDto categoryDto);
+
     Shop toShop(ShopDto shopDto);
+
     @Mapping(target = "category", expression = "java(toCategory(productDto.getCategoryDto()))")
     @Mapping(target = "shop", expression = "java(toShop(productDto.getShopDto()))")
     Product toProduct(ProductDto productDto);
