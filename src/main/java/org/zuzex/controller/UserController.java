@@ -11,8 +11,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import static org.zuzex.constant.AppConstants.ADMIN;
-import static org.zuzex.constant.UriConstants.USER_ID;
-import static org.zuzex.constant.UriConstants.USER_PATH_V1;
+import static org.zuzex.constant.AppConstants.USER;
+import static org.zuzex.constant.UriConstants.*;
 
 @Path(USER_PATH_V1)
 @Produces(MediaType.APPLICATION_JSON)
@@ -22,8 +22,8 @@ public class UserController {
 
     @GET
     @RolesAllowed(ADMIN)
-    @Path(USER_ID)
-    public User getUserById(@PathParam("userId") Long id) {
+    @Path(USER_ID_PATH)
+    public User getUserById(@PathParam(USER_ID) Long id) {
         return User.findById(id);
     }
 
@@ -32,7 +32,7 @@ public class UserController {
     @PermitAll
     @POST
     public Response createUser(User user) {
-        User.add(user.username, user.password, "user");
+        User.add(user.username, user.password, USER);
         return Response.noContent().build();
     }
 }

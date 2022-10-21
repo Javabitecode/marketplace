@@ -12,6 +12,7 @@ import io.quarkus.security.AuthenticationFailedException;
 
 @Provider
 @Priority(Priorities.AUTHENTICATION)
+/*TODO Переписать ответ*/
 public class AuthenticationFailedExceptionMapper implements ExceptionMapper<AuthenticationFailedException> {
 
     @Override

@@ -33,16 +33,16 @@ public class ProductController {
     private final CheckService checkService;
 
     @GET
-    @Path(PRODUCT_ID)
-    public ProductDto getProductById(@PathParam("productId") Long productId) {
+    @Path(PRODUCT_ID_PATH)
+    public ProductDto getProductById(@PathParam(PRODUCT_ID) Long productId) {
         return productMapper.toProductDto(productService.getProductById(productId));
     }
 
     @RolesAllowed(value = {USER, ADMIN})
     @POST
     @Path(ADD_PRODUCT_TO_SHOP)
-    public ProductDto addProductToShop(@PathParam("shopId") Long shopId,
-                                       @PathParam("categoryId") Long categoryId,
+    public ProductDto addProductToShop(@PathParam(SHOP_ID) Long shopId,
+                                       @PathParam(CATEGORY_ID) Long categoryId,
                                        @Valid ProductDto productDto) {
         Product product = productMapper.toProduct(productDto);
         return productMapper
@@ -61,8 +61,8 @@ public class ProductController {
 
     @PermitAll
     @POST
-    @Path(PRODUCT_ID)
-    public void sellProduct(@PathParam("productId") Long productId) {
+    @Path(PRODUCT_ID_PATH)
+    public void sellProduct(@PathParam(PRODUCT_ID) Long productId) {
         productService.sellProduct(productId);
     }
 
@@ -75,9 +75,9 @@ public class ProductController {
     @RolesAllowed(value = ADMIN)
     @PUT
     @Path(UPDATE_PRODUCT)
-    public ProductDto updateProduct(@PathParam("productId") Long productId,
-                                    @PathParam("shopId") Long shopId,
-                                    @PathParam("categoryId") Long categoryId,
+    public ProductDto updateProduct(@PathParam(PRODUCT_ID) Long productId,
+                                    @PathParam(SHOP_ID) Long shopId,
+                                    @PathParam(CATEGORY_ID) Long categoryId,
                                     ProductDto productDto) {
         Product product = productMapper.toProduct(productDto);
         return productMapper.toProductDto(productService.updateProduct(product, productId, shopId, categoryId));
@@ -85,8 +85,8 @@ public class ProductController {
 
     @RolesAllowed(value = ADMIN)
     @DELETE
-    @Path(PRODUCT_ID)
-    public void deleteProductById(@PathParam("productId") Long productId) {
+    @Path(PRODUCT_ID_PATH)
+    public void deleteProductById(@PathParam(PRODUCT_ID) Long productId) {
         productService.deleteProductById(productId);
     }
 }

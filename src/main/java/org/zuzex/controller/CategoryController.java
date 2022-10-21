@@ -15,8 +15,7 @@ import javax.ws.rs.core.Response;
 import java.util.List;
 
 import static org.zuzex.constant.AppConstants.ADMIN;
-import static org.zuzex.constant.UriConstants.CATEGORY_ID;
-import static org.zuzex.constant.UriConstants.CATEGORY_PATH_V1;
+import static org.zuzex.constant.UriConstants.*;
 
 @RequiredArgsConstructor
 @Path(CATEGORY_PATH_V1)
@@ -31,8 +30,8 @@ public class CategoryController {
 
     @PermitAll
     @GET
-    @Path(CATEGORY_ID)
-    public CategoryDto getCategoryById(@PathParam("categoryId") Long categoryId) {
+    @Path(CATEGORY_ID_PATH)
+    public CategoryDto getCategoryById(@PathParam(CATEGORY_ID) Long categoryId) {
         return productMapper.toCategoryDto(categoryService.getCategoryById(categoryId));
     }
 
@@ -56,8 +55,8 @@ public class CategoryController {
 
     @RolesAllowed(ADMIN)
     @DELETE
-    @Path(CATEGORY_ID)
-    public Response deleteCategoryById(@PathParam("categoryId") Long categoryId) {
+    @Path(CATEGORY_ID_PATH)
+    public Response deleteCategoryById(@PathParam(CATEGORY_ID) Long categoryId) {
         categoryService.deleteCategory(categoryId);
         return Response.noContent().build();
     }

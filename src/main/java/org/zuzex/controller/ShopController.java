@@ -19,8 +19,7 @@ import java.util.List;
 import static javax.ws.rs.core.Response.Status.CREATED;
 import static org.zuzex.constant.AppConstants.ADMIN;
 import static org.zuzex.constant.AppConstants.USER;
-import static org.zuzex.constant.UriConstants.SHOP_ID;
-import static org.zuzex.constant.UriConstants.SHOP_PATH_V1;
+import static org.zuzex.constant.UriConstants.*;
 
 @Slf4j
 @Path(SHOP_PATH_V1)
@@ -38,8 +37,8 @@ public class ShopController {
 
     @PermitAll
     @GET
-    @Path(SHOP_ID)
-    public ShopDto getShopById(@PathParam("shopId") Long id) {
+    @Path(SHOP_ID_PATH)
+    public ShopDto getShopById(@PathParam(SHOP_ID) Long id) {
         return shopMapper.toShopDto(shopService.getShopById(id));
     }
 
@@ -63,8 +62,8 @@ public class ShopController {
 
     @RolesAllowed(value = {USER, ADMIN})
     @PUT
-    @Path(SHOP_ID)
-    public Response updateShopName(@PathParam("shopId") Long shopId,
+    @Path(SHOP_ID_PATH)
+    public Response updateShopName(@PathParam(SHOP_ID) Long shopId,
                                    ShopDto shopDto) {
         log.info("User updateShopName - user: {}", identity.getPrincipal().getName());
         Shop shop = shopMapper.toShop(shopDto);
@@ -74,8 +73,8 @@ public class ShopController {
 
     @RolesAllowed(value = {USER, ADMIN})
     @DELETE
-    @Path(SHOP_ID)
-    public Response deleteShopById(@PathParam("shopId") Long shopId) {
+    @Path(SHOP_ID_PATH)
+    public Response deleteShopById(@PathParam(SHOP_ID) Long shopId) {
         shopService.deleteShop(shopId);
         return Response.noContent().build();
     }

@@ -2,7 +2,7 @@ package org.zuzex.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.zuzex.exception.ShopAlreadyExistsException;
+import org.zuzex.exception.CategoryAlreadyExistsException;
 import org.zuzex.model.Category;
 import org.zuzex.repository.CategoryRepository;
 import org.zuzex.service.CategoryService;
@@ -47,7 +47,7 @@ public class CategoryServiceIml implements CategoryService {
     public Category createCategory(Category category) {
         boolean checkCategory = categoryRepository.findByName(category.getName()).isPresent();
         if (checkCategory)
-            throw new ShopAlreadyExistsException(CATEGORY_IS_EXISTS);
+            throw new CategoryAlreadyExistsException(CATEGORY_IS_EXISTS);
         categoryRepository.persist(category);
         return category;
     }
