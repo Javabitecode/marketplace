@@ -14,7 +14,6 @@ import java.util.List;
 @Builder(toBuilder = true)
 @AllArgsConstructor
 @NoArgsConstructor
-/*@TypeDefs(@TypeDef(name = "jsonb", typeClass = JsonBinaryType.class))*/
 public class Check {
     @BsonId
     private Long id;
@@ -25,8 +24,6 @@ public class Check {
     @BsonProperty("shop_name")
     private String shopName;
 
-
-    /* @Type(type = JsonTypes.JSON_BIN)*/
     @BsonProperty("product_imprints")
     private List<ProductImprint> productImprints;
 
