@@ -2,32 +2,26 @@ package org.zuzex.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.zuzex.exception.ProductNotFoundException;
-import org.zuzex.exception.ServiceException;
 import org.zuzex.exception.ShopAlreadyExistsException;
 import org.zuzex.exception.ShopNotFoundException;
-import org.zuzex.model.Product;
 import org.zuzex.model.Shop;
 import org.zuzex.repository.ShopRepository;
-import org.zuzex.service.ProductService;
 import org.zuzex.service.ShopService;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.transaction.Transactional;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
-import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
-import static org.zuzex.constant.Constants.*;
+import static org.zuzex.constant.ExceptionConstants.SHOP_EXISTS;
+import static org.zuzex.constant.ExceptionConstants.SHOP_NOT_FOUND;
 
 @Slf4j
 @ApplicationScoped
 @RequiredArgsConstructor
 public class ShopServiceImpl implements ShopService {
     private final ShopRepository shopRepository;
-    private final ProductService productService;
 
     @Transactional
     @Override
@@ -35,14 +29,7 @@ public class ShopServiceImpl implements ShopService {
         Shop shopDb = shopRepository.findByName(shop.getName());
         if (nonNull(shopDb))
             throw new ShopAlreadyExistsException(SHOP_EXISTS);
-        Shop sh = Shop.builder()
-                        .name(shop.getName())
-                .build();
-        shopRepository.persist(sh);
-        Shop shopDbs = shopRepository.findByName(sh.getName());
-        System.out.println("sdsdaasda" + shop.getProducts());
-        shopDbs.addProduct(shop.getProducts().stream().findFirst().get());
-        shopRepository.persist(shopDbs);
+        shopRepository.persist(shop);
         log.info("IN createShop - shop: {} successfully created", shop);
         return shop;
     }
@@ -56,47 +43,20 @@ public class ShopServiceImpl implements ShopService {
 
     @Override
     public Shop getShopById(Long id) {
-        Shop shop = shopRepository.findById(id);
-        if (isNull(shop))
-            throw new ShopNotFoundException(SHOP_NOT_FOUND);
+        Shop shop = shopRepository.findByIdOptional(id)
+                .orElseThrow(() -> new ShopNotFoundException(SHOP_NOT_FOUND));
         log.info("IN getShopById - id: {} successfully get by id", id);
         return shop;
     }
 
     @Transactional
     @Override
-    public Shop updateShop(Shop shop) {
-        if (isNull(shop.getId()))
-            throw new ServiceException(SHOP_DOES_NOT_ID);
-        Shop shopDb = getShopById(shop.getId());
-        shop.setId(shopDb.getId());
-        shopRepository.persist(shop);
-        log.info("IN updateShop - shop: {} successfully updated", shop);
-        return shop;
-    }
-
-    @Transactional
-    @Override
-    public Shop addNewProductToShop(Product product, Long shopId) {
+    public Shop updateShopName(Shop shop, Long shopId) {
         Shop shopDb = getShopById(shopId);
-        shopDb.addProduct(product);
+        shopDb.setName(shop.getName());
         shopRepository.persist(shopDb);
-        log.info("IN addProduct - product: {} successfully added", product);
+        log.info("IN updateShop - shop: {} successfully updated", shopDb);
         return shopDb;
-    }
-
-    @Transactional
-    @Override
-    public void removeProductFromShop(Long productId, Long shopId) {
-        Shop shopDb = getShopById(shopId);
-        Product product = shopDb.getProducts()
-                .stream()
-                .filter(prod -> Objects.equals(prod.getId(), productId))
-                .findFirst()
-                .orElseThrow(() -> new ProductNotFoundException(PRODUCT_NOT_FOUND));
-        shopDb.removeProduct(product);
-        shopRepository.persist(shopDb);
-        log.info("IN addProduct - product: {} successfully added", product);
     }
 
     @Override

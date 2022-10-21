@@ -1,7 +1,7 @@
 package org.zuzex.exception;
 
 
-public class ShopAlreadyExistsException extends ServiceException{
+public class ShopAlreadyExistsException extends ServiceException {
     public ShopAlreadyExistsException() {
     }
 

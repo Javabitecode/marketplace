@@ -1,73 +1,58 @@
 package org.zuzex.controller;
 
-import org.zuzex.dto.ProductDto;
+import io.quarkus.cache.CacheResult;
+import io.quarkus.security.identity.SecurityIdentity;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.zuzex.dto.ShopDto;
-import org.zuzex.model.Product;
 import org.zuzex.model.Shop;
-import org.zuzex.service.ProductMapper;
-import org.zuzex.service.ShopMapper;
 import org.zuzex.service.ShopService;
+import org.zuzex.util.mapper.ShopMapper;
 
-import javax.inject.Inject;
+import javax.annotation.security.PermitAll;
+import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
 
 import static javax.ws.rs.core.Response.Status.CREATED;
+import static org.zuzex.constant.AppConstants.ADMIN;
+import static org.zuzex.constant.AppConstants.USER;
+import static org.zuzex.constant.UriConstants.*;
 
-@Path("/api/v1/shops")
+@Slf4j
+@Path(SHOP_PATH_V1)
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes({MediaType.TEXT_PLAIN, MediaType.APPLICATION_JSON})
+@RequiredArgsConstructor
+/*TODO Проверить создателя ресурса и дать права обновления только ему и админую(AUTH).
+ *  Перенести в интерфейс*/
 public class ShopController {
-    @Inject
-    ShopService shopService;
-    @Inject
-    ShopMapper shopMapper;
 
-    @Inject
-    ProductMapper productMapper;
+    private final ShopService shopService;
+    private final ShopMapper shopMapper;
 
+    private final SecurityIdentity identity;
+
+    @PermitAll
     @GET
-    @Path(("/{shopId}"))
-    public ShopDto getShopById(@PathParam("shopId") Long id) {
+    @Path(SHOP_ID_PATH)
+    public ShopDto getShopById(@PathParam(SHOP_ID) Long id) {
         return shopMapper.toShopDto(shopService.getShopById(id));
     }
 
-
+    @PermitAll
+    @CacheResult(cacheName = "get-shops-cache")
     @GET
     public List<ShopDto> getAllShop() {
         return shopService.getAllShop()
                 .stream()
-                .map(shop -> shopMapper.toShopDto(shop))
+                .map(shopMapper::toShopDto)
                 .toList();
     }
 
-    @PUT
-    @Path(("/{shopId}"))
-    public Response updateShop(@PathParam("shopId") Long shopId, ShopDto shopDto) {
-        Shop shop = shopMapper.toShop(shopDto);
-        shop.setId(shopId);
-        ShopDto response = shopMapper.toShopDto(shopService.updateShop(shop));
-        return Response.ok().entity(response).build();
-    }
-
-    @POST
-    @Path(("/{shopId}"))
-    public Response addNewProductToShop(@PathParam("shopId") Long shopId, ProductDto productDto) {
-        Product product = productMapper.toProduct(productDto);
-        ShopDto response = shopMapper.toShopDto(shopService.addNewProductToShop(product, shopId));
-        return Response.status(CREATED).entity(response).build() ;
-    }
-
-    @POST
-    @Path(("/{shopId}/products/{productId}"))
-    public Response removeProductFromShop(@PathParam("shopId") Long shopId,
-                                      @PathParam("productId") Long productId) {
-        shopService.removeProductFromShop(productId, shopId);
-        return Response.noContent().build();
-    }
-
+    @RolesAllowed(value = {USER, ADMIN})
     @POST
     public Response createShop(ShopDto shopDto) {
         Shop shop = shopMapper.toShop(shopDto);
@@ -75,9 +60,21 @@ public class ShopController {
         return Response.status(CREATED).entity(response).build();
     }
 
+    @RolesAllowed(value = {USER, ADMIN})
+    @PUT
+    @Path(SHOP_ID_PATH)
+    public Response updateShopName(@PathParam(SHOP_ID) Long shopId,
+                                   ShopDto shopDto) {
+        log.info("User updateShopName - user: {}", identity.getPrincipal().getName());
+        Shop shop = shopMapper.toShop(shopDto);
+        ShopDto response = shopMapper.toShopDto(shopService.updateShopName(shop, shopId));
+        return Response.ok().entity(response).build();
+    }
+
+    @RolesAllowed(value = {USER, ADMIN})
     @DELETE
-    @Path(("/{shopId}"))
-    public Response deleteShopById(@PathParam("shopId") Long shopId) {
+    @Path(SHOP_ID_PATH)
+    public Response deleteShopById(@PathParam(SHOP_ID) Long shopId) {
         shopService.deleteShop(shopId);
         return Response.noContent().build();
     }

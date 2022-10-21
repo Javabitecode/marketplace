@@ -1,10 +1,11 @@
 package org.zuzex.model;
 
-import io.quarkiverse.hibernate.types.json.JsonType;
+import io.quarkiverse.hibernate.types.json.JsonBinaryType;
 import io.quarkiverse.hibernate.types.json.JsonTypes;
 import lombok.*;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
+import org.hibernate.annotations.TypeDefs;
 
 import javax.persistence.*;
 import java.util.List;
@@ -17,7 +18,7 @@ import java.util.List;
 @Builder(toBuilder = true)
 @AllArgsConstructor
 @NoArgsConstructor
-@TypeDef(name = JsonTypes.JSON, typeClass = JsonType.class)
+@TypeDefs(@TypeDef(name = "jsonb", typeClass = JsonBinaryType.class))
 public class Check {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "check_seq")
@@ -30,8 +31,8 @@ public class Check {
     @Column(name = "shop_name")
     private String shopName;
 
-    @Type(type = JsonTypes.JSON)
-    @Column(name = "product_imprints", columnDefinition = JsonTypes.JSON)
+    @Type(type = JsonTypes.JSON_BIN)
+    @Column(name = "product_imprints", columnDefinition = JsonTypes.JSON_BIN)
     private List<ProductImprint> productImprints;
 
     @Override

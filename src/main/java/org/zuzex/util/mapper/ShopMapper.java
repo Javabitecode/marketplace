@@ -1,4 +1,4 @@
-package org.zuzex.service;
+package org.zuzex.util.mapper;
 
 import org.mapstruct.Mapper;
 import org.zuzex.dto.ShopDto;

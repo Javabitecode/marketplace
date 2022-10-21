@@ -1,17 +1,16 @@
 package org.zuzex.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.zuzex.enums.CURRENCY;
-import org.zuzex.model.Category;
+import org.zuzex.enums.Currency;
 
+import javax.validation.constraints.NotNull;
 import java.util.UUID;
 
-import static org.zuzex.enums.CURRENCY.RUB;
+import static org.zuzex.enums.Currency.RUB;
 
 @Data
 @Builder(toBuilder = true)
@@ -19,12 +18,21 @@ import static org.zuzex.enums.CURRENCY.RUB;
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ProductDto {
+
     @Builder.Default
-    private CURRENCY currency = RUB;
+    private Currency currency = RUB;
+
+    @NotNull(message = "Имя продукта не должно равняться null")
     private String name;
+
+    @NotNull(message = "Цена продукта не должна равняться null")
     private Long price;
+
     private UUID article;
+
+    @NotNull(message = "Количество не должно равняться null")
     private Long quantity;
-    private Category category;
+
+    private CategoryDto categoryDto;
     private ShopDto shopDto;
 }
